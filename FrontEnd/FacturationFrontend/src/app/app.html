@@ -1,0 +1,10 @@
+<div class="app-container">
+  <app-sidebar />
+  <main class="main-content" [class.collapsed]="isSidebarCollapsed()">
+    <app-navbar [title]="pageTitle()" />
+    <div class="page-container">
+      <router-outlet />
+    </div>
+  </main>
+</div>
+<app-toast />

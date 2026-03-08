@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: facturestock-backend
+  profiles:
+    active: dev
+
+server:
+  port: 8082
+  servlet:
+    context-path: /
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+    enabled: true
