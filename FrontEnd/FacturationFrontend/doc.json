@@ -427,6 +427,36 @@
         }
       }
     },
+    "/api/operations": {
+      "post": {
+        "tags": [
+          "operation-controller"
+        ],
+        "operationId": "addOperation",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOperationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/OperationResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/products/search": {
       "get": {
         "tags": [
@@ -574,6 +604,12 @@
             "items": {
               "type": "integer",
               "format": "int64"
+            }
+          },
+          "categoryNames": {
+            "type": "array",
+            "items": {
+              "type": "string"
             }
           },
           "reference": {
@@ -764,6 +800,103 @@
           "name",
           "type"
         ]
+      },
+      "CreateOperationRequest": {
+        "type": "object",
+        "properties": {
+          "productIds": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "LIVRAISON",
+              "RECEPTION",
+              "RETOUR_CLIENT",
+              "RETOUR_FOURNISSEUR",
+              "AJUSTEMENT_STOCK"
+            ]
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "BROUILLON",
+              "PRET",
+              "TERMINE"
+            ]
+          },
+          "datePlanifiee": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateLimit": {
+            "type": "string",
+            "format": "date"
+          },
+          "beneficiaire": {
+            "type": "string"
+          }
+        }
+      },
+      "OperationItemResponse": {
+        "type": "object",
+        "properties": {
+          "product": {
+            "$ref": "#/components/schemas/ProductResponse"
+          },
+          "quantity": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "OperationResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int64"
+          },
+          "beneficiaire": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "LIVRAISON",
+              "RECEPTION",
+              "RETOUR_CLIENT",
+              "RETOUR_FOURNISSEUR",
+              "AJUSTEMENT_STOCK"
+            ]
+          },
+          "currentState": {
+            "type": "string",
+            "enum": [
+              "BROUILLON",
+              "PRET",
+              "TERMINE"
+            ]
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OperationItemResponse"
+            }
+          },
+          "datePlanifiee": {
+            "type": "string",
+            "format": "date"
+          },
+          "dateLimit": {
+            "type": "string",
+            "format": "date"
+          }
+        }
       },
       "PageResponseProductResponse": {
         "type": "object",

@@ -1,0 +1,192 @@
+<div class="fade-in">
+    <!-- Stats Summary -->
+    <div class="stats-grid mb-24">
+        <div class="stat-card">
+            <div class="stat-icon bg-primary-light text-primary">📦</div>
+            <div class="stat-data">
+                <span class="stat-label">Total Produits</span>
+                <span class="stat-value">{{ pageData()?.totalElements ?? 0 }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-success-light text-success">🏷️</div>
+            <div class="stat-data">
+                <span class="stat-label">Biens</span>
+                <span class="stat-value">{{ countByType('GOODS') }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-info-light text-info">⚙️</div>
+            <div class="stat-data">
+                <span class="stat-label">Services</span>
+                <span class="stat-value">{{ countByType('SERVICE') }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-warning-light text-warning">📋</div>
+            <div class="stat-data">
+                <span class="stat-label">Combos</span>
+                <span class="stat-value">{{ countByType('COMBO') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters & Actions -->
+    <div class="card mb-24">
+        <div class="filter-bar">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="form-input" placeholder="Chercher par nom..." [(ngModel)]="filter.name"
+                    (input)="onSearchChange()" />
+            </div>
+            <div class="filter-group">
+                <select class="form-select w-160" [(ngModel)]="filterType" (change)="onFilterChange()">
+                    <option value="">Tous les types</option>
+                    <option value="GOODS">📦 Biens</option>
+                    <option value="SERVICE">⚙️ Services</option>
+                    <option value="COMBO">📋 Combos</option>
+                </select>
+                <select class="form-select w-200" [(ngModel)]="filterCategoryId" (change)="onFilterChange()">
+                    <option value="">Toutes catégories</option>
+                    @for (cat of categories(); track cat.id) {
+                    <option [value]="cat.id">{{ cat.name }}</option>
+                    }
+                </select>
+            </div>
+            <a routerLink="/products/new" class="btn btn-primary ml-auto">
+                <span>+</span> Nouveau Produit
+            </a>
+        </div>
+    </div>
+
+    <!-- Products Table -->
+    <div class="card overflow-hidden">
+        @if (loading()) {
+        <div class="loading-overlay">
+            <div class="spinner"></div>
+        </div>
+        } @else if (products().length === 0) {
+        <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <div class="empty-state-title">Aucun produit trouvé</div>
+            <p class="empty-state-text">
+                {{ (filter.name || filterType || filterCategoryId) ? 'Aucun produit ne correspond à vos filtres.' :
+                'Commencez par ajouter votre premier produit au catalogue.' }}
+            </p>
+            @if (!(filter.name || filterType || filterCategoryId)) {
+            <a routerLink="/products/new" class="btn btn-primary mt-16">Ajouter un produit</a>
+            }
+        </div>
+        } @else {
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th (click)="toggleSort('name')" class="cursor-pointer">
+                            Produit {{ filter.sortBy === 'name' ? (filter.sortDirection === 'asc' ? '↑' : '↓') : '' }}
+                        </th>
+                        <th>Référence</th>
+                        <th>Type</th>
+                        <th class="financial">Prix vente</th>
+                        <th class="cursor-pointer">Stock</th>
+                        <th>Catégories</th>
+                        <th style="width: 120px; text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (product of products(); track product.id; let i = $index) {
+                    <tr>
+                        <td>
+                            <div class="product-item">
+                                <div class="product-avatar">
+                                    @if (product.photoUrl) {
+                                    <img [src]="product.photoUrl" [alt]="product.name" />
+                                    } @else {
+                                    {{ product.name.charAt(0).toUpperCase() }}
+                                    }
+                                </div>
+                                <div class="product-meta">
+                                    <span class="product-name">{{ product.name }}</span>
+                                    <div class="tag-group">
+                                        @if (product.forSale) { <span
+                                            class="mini-tag bg-success-light text-success">Vente</span> }
+                                        @if (product.forPurchase) { <span
+                                            class="mini-tag bg-info-light text-info">Achat</span> }
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><code class="ref-tag">{{ product.reference || '—' }}</code></td>
+                        <td>
+                            <span class="badge"
+                                [class]="'badge-' + (product.type === 'GOODS' ? 'success' : (product.type === 'SERVICE' ? 'info' : 'warning'))">
+                                {{ product.type === 'GOODS' ? 'BIEN' : (product.type === 'SERVICE' ? 'SERVICE' :
+                                'COMBO') }}
+                            </span>
+                        </td>
+                        <td class="financial font-medium text-primary">
+                            {{ formatPrice(product.salePrices && product.salePrices.length > 0 ?
+                            product.salePrices[0].price : 0) }} DT
+                        </td>
+                        <td>
+                            <div class="stock-status">
+                                <span class="stock-value"
+                                    [class.text-danger]="product.quantity < 5 && product.type === 'GOODS'">
+                                    {{ product.type === 'SERVICE' ? '∞' : product.quantity }}
+                                </span>
+                                @if (product.quantity < 5 && product.type==='GOODS' ) { <span
+                                    class="status-dot dot-danger" title="Stock faible"></span>
+                                    }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="flex-wrap gap-4">
+                                @for (cat of (product.categories || []).slice(0, 2); track cat.id) {
+                                <span class="cat-pill">{{ cat.name }}</span>
+                                }
+                                @if ((product.categories?.length || 0) > 2) {
+                                <span class="cat-more">+{{ product.categories!.length - 2 }}</span>
+                                }
+                            </div>
+                        </td>
+                        <td>
+                            <div class="actions gap-8">
+                                <a [routerLink]="['/products', product.id, 'edit']" class="btn-icon-sm"
+                                    title="Modifier">✏️</a>
+                                <button class="btn-icon-sm text-danger" (click)="confirmDelete(product)"
+                                    title="Supprimer">🗑️</button>
+                            </div>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination Footer -->
+        @if (pageData() && pageData()!.totalPages > 1) {
+        <div class="pagination-bar">
+            <span class="pagination-text">
+                Affichage <b>{{ (filter.page * filter.size) + 1 }}–{{ Math.min((filter.page + 1) * filter.size,
+                    pageData()!.totalElements) }}</b> sur <b>{{ pageData()!.totalElements }}</b>
+            </span>
+            <div class="pagination-actions">
+                <button class="btn-icon-sm" [disabled]="pageData()!.first"
+                    (click)="goToPage(filter.page - 1)">←</button>
+                @for (p of getPageNumbers(); track p) {
+                <button class="page-num" [class.active]="p === filter.page" (click)="goToPage(p)">{{ p + 1 }}</button>
+                }
+                <button class="btn-icon-sm" [disabled]="pageData()!.last" (click)="goToPage(filter.page + 1)">→</button>
+            </div>
+        </div>
+        }
+        }
+    </div>
+
+    <!-- Delete Confirmation -->
+    @if (productToDelete()) {
+    <app-confirm-dialog [title]="'Supprimer le produit'"
+        [message]="'Êtes-vous sûr de vouloir supprimer « ' + productToDelete()!.name + ' » ? Cette action est irréversible.'"
+        (confirmed)="deleteProduct()" (cancelled)="productToDelete.set(null)" />
+    }
+</div>
