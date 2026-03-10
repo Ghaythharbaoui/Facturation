@@ -1,0 +1,112 @@
+<div class="page-container">
+    @if (loading()) {
+    <div class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+    } @else if (operation()) {
+    <div class="page-header">
+        <div>
+            <a routerLink="/operations" class="back-link">← Retour aux opérations</a>
+            <h1>Opération #{{ operation()!.id }}</h1>
+            <div class="header-badges mt-8">
+                <span class="badge" [class]="getBadgeClass(operation()!.type)">
+                    {{ operation()!.type }}
+                </span>
+                <span class="badge ml-8" [class]="getStateBadgeClass(operation()!.currentState)">
+                    {{ operation()!.currentState }}
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-grid">
+        <!-- Main Info -->
+        <div class="detail-main">
+            <div class="card detail-card mb-24">
+                <div class="card-header">
+                    <span class="icon">📋</span>
+                    <h2>Détails du mouvement</h2>
+                </div>
+                <div class="card-body">
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Bénéficiaire</span>
+                            <span class="value">{{ operation()!.beneficiaire || '—' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Date Planifiée</span>
+                            <span class="value">{{ operation()!.datePlanifiee }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Date Limite</span>
+                            <span class="value">{{ operation()!.dateLimit || '—' }}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Type</span>
+                            <span class="value">{{ operation()!.type }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card detail-card">
+                <div class="card-header">
+                    <span class="icon">📦</span>
+                    <h2>Produits</h2>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Référence</th>
+                                    <th class="text-right">Quantité</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (item of operation()!.items; track item.product.id) {
+                                <tr>
+                                    <td>
+                                        <div class="product-info">
+                                            <span class="font-medium text-primary">{{ item.product.name }}</span>
+                                        </div>
+                                    </td>
+                                    <td><code class="ref-tag">{{ item.product.reference || '—' }}</code></td>
+                                    <td class="text-right font-bold">{{ item.quantity }}</td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar Actions -->
+        <div class="detail-side">
+            <div class="card detail-card">
+                <div class="card-header">
+                    <span class="icon">⚡</span>
+                    <h2>Actions</h2>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-secondary btn-full mb-12" (click)="loadOperation(operation()!.id)">
+                        Actualiser
+                    </button>
+                    <button class="btn btn-primary btn-full disabled" title="Bientôt disponible">
+                        Imprimer BL
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    } @else {
+    <div class="empty-state">
+        <div class="empty-state-icon">❓</div>
+        <div class="empty-state-title">Opération non trouvée</div>
+        <p class="empty-state-text">L'identifiant d'opération n'existe pas ou a été supprimé.</p>
+        <a routerLink="/operations" class="btn btn-primary mt-16">Retour à la liste</a>
+    </div>
+    }
+</div>

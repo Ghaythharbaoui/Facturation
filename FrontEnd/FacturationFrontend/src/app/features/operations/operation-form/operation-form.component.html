@@ -1,0 +1,167 @@
+<div class="page-container">
+    <!-- Header -->
+    <div class="page-header">
+        <div>
+            <a routerLink="/operations" class="back-link">← Retour aux opérations</a>
+            <h1>Nouvelle Opération de Stock</h1>
+            <p class="page-header-subtitle">
+                Enregistrez un mouvement de stock (réception, livraison, ajustement...)
+            </p>
+        </div>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #operationForm="ngForm">
+        <div class="form-grid">
+            <!-- Left Column - Main Info -->
+            <div class="form-column">
+                <!-- Basic Info Card -->
+                <div class="card form-card">
+                    <div class="form-card-header">
+                        <span class="form-card-icon">📋</span>
+                        <h2>Informations générales</h2>
+                    </div>
+                    <div class="form-card-body">
+                        <div class="form-group">
+                            <label class="form-label">Type d'opération *</label>
+                            <select class="form-select" [(ngModel)]="request.type" name="type" required>
+                                <option value="RECEPTION">Réception (Entrée)</option>
+                                <option value="LIVRAISON">Livraison (Sortie)</option>
+                                <option value="RETOUR_CLIENT">Retour Client (Entrée)</option>
+                                <option value="RETOUR_FOURNISSEUR">Retour Fournisseur (Sortie)</option>
+                                <option value="AJUSTEMENT_STOCK">Ajustement de Stock</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Bénéficiaire / Partenaire</label>
+                            <input type="text" class="form-input" placeholder="Ex: Client XYZ, Fournisseur ABC..."
+                                [(ngModel)]="request.beneficiaire" name="beneficiaire" />
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Date Planifiée</label>
+                                <input type="date" class="form-input" [(ngModel)]="request.datePlanifiee"
+                                    name="datePlanifiee" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Date Limite</label>
+                                <input type="date" class="form-input" [(ngModel)]="request.dateLimit"
+                                    name="dateLimit" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Statut Initial</label>
+                            <select class="form-select" [(ngModel)]="request.state" name="state">
+                                <option value="BROUILLON">Brouillon</option>
+                                <option value="PRET">Prêt</option>
+                                <option value="TERMINE">Terminé (Valider immédiatement)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products List Card -->
+                <div class="card form-card">
+                    <div class="form-card-header">
+                        <span class="form-card-icon">📦</span>
+                        <h2>Produits à transférer</h2>
+                    </div>
+                    <div class="form-card-body">
+                        <!-- Product Search -->
+                        <div class="search-container mb-16">
+                            <div class="search-input-wrapper">
+                                <span class="search-icon">🔍</span>
+                                <input type="text" class="form-input"
+                                    placeholder="Chercher un produit par nom ou référence..."
+                                    (input)="onSearchProduct($event)" #searchInput />
+
+                                @if (searchResults().length > 0) {
+                                <div class="search-results-dropdown">
+                                    @for (p of searchResults(); track p.id) {
+                                    <div class="search-result-item" (click)="addProduct(p)">
+                                        <div class="result-info">
+                                            <span class="result-name">{{ p.name }}</span>
+                                            <span class="result-ref">{{ p.reference }}</span>
+                                        </div>
+                                        <span class="result-stock">Stock: {{ p.quantity }}</span>
+                                    </div>
+                                    }
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                        <!-- Items Table -->
+                        @if (selectedItems().length === 0) {
+                        <div class="empty-items">
+                            <p>Aucun produit sélectionné. Utilisez la recherche ci-dessus.</p>
+                        </div>
+                        } @else {
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th style="width: 120px;">Quantité</th>
+                                        <th style="width: 50px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (item of selectedItems(); track item.product.id; let i = $index) {
+                                    <tr>
+                                        <td>
+                                            <div class="product-info">
+                                                <span class="font-medium text-primary">{{ item.product.name }}</span>
+                                                <span class="text-xs text-muted">{{ item.product.reference }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-input text-center"
+                                                [(ngModel)]="item.quantity" [name]="'qty_' + i" min="1"
+                                                (change)="updateProductIdsMap()" />
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn-icon-sm text-danger"
+                                                (click)="removeItem(i)">🗑</button>
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column - Actions -->
+            <div class="form-column-side">
+                <div class="card form-card">
+                    <div class="form-card-header">
+                        <span class="form-card-icon">⚡</span>
+                        <h2>Actions</h2>
+                    </div>
+                    <div class="form-card-body">
+                        <button type="submit" class="btn btn-primary btn-full"
+                            [disabled]="saving() || selectedItems().length === 0">
+                            @if (saving()) {
+                            <div class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
+                            }
+                            Enregistrer l'opération
+                        </button>
+                        <a routerLink="/operations" class="btn btn-secondary btn-full mt-12"
+                            style="display: flex;">Annuler</a>
+                    </div>
+                </div>
+
+                <div class="info-alert mt-16">
+                    <span class="info-icon">💡</span>
+                    <p>Le type d'opération détermine si les stocks seront augmentés (Réception) ou diminués (Livraison).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

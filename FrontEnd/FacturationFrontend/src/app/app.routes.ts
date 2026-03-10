@@ -31,6 +31,24 @@ export const routes: Routes = [
                 .then(m => m.CategoryListComponent)
     },
     {
+        path: 'operations',
+        loadComponent: () =>
+            import('./features/operations/operation-list/operation-list.component')
+                .then(m => m.OperationListComponent)
+    },
+    {
+        path: 'operations/new',
+        loadComponent: () =>
+            import('./features/operations/operation-form/operation-form.component')
+                .then(m => m.OperationFormComponent)
+    },
+    {
+        path: 'operations/:id',
+        loadComponent: () =>
+            import('./features/operations/operation-detail/operation-detail.component')
+                .then(m => m.OperationDetailComponent)
+    },
+    {
         path: 'dashboard',
         loadComponent: () =>
             import('./features/products/product-list/product-list.component')

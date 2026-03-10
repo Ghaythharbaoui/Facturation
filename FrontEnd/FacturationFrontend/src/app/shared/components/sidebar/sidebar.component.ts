@@ -59,9 +59,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
             <span class="nav-icon">👥</span>
             @if (!collapsed()) { <span>Clients</span> <span class="coming-soon">Bientôt</span> }
           </a>
-          <a class="nav-item disabled" title="Bientôt disponible">
+          <a routerLink="/operations" routerLinkActive="active" class="nav-item" [title]="collapsed() ? 'Stock' : ''">
             <span class="nav-icon">🏭</span>
-            @if (!collapsed()) { <span>Stock</span> <span class="coming-soon">Bientôt</span> }
+            @if (!collapsed()) { <span>Stock</span> }
           </a>
         </div>
       </nav>

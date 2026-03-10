@@ -35,4 +35,19 @@ public class Product {
     private String description;
     private List<Prix> salePrices;
     private int quantity;
+
+    public boolean isAvailable(int demande) {
+        return demande <= this.quantity;
+    }
+
+    public void decreaseStock(int amount) {
+        if (this.quantity < amount) {
+            throw new IllegalStateException("Not enough stock for product " + name);
+        }
+        this.quantity -= amount;
+    }
+
+    public void increaseStock(int amount) {
+        this.quantity += amount;
+    }
 }

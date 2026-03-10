@@ -1,0 +1,103 @@
+<div class="fade-in">
+    <!-- Stats Summary -->
+    <div class="stats-grid mb-24">
+        <div class="stat-card">
+            <div class="stat-icon bg-primary-light text-primary">🔄</div>
+            <div class="stat-data">
+                <span class="stat-label">Total Opérations</span>
+                <span class="stat-value">{{ operations().length }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-success-light text-success">📥</div>
+            <div class="stat-data">
+                <span class="stat-label">Réceptions</span>
+                <span class="stat-value">{{ countByType('RECEPTION') }}</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon bg-warning-light text-warning">📤</div>
+            <div class="stat-data">
+                <span class="stat-label">Livraisons</span>
+                <span class="stat-value">{{ countByType('LIVRAISON') }}</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="card mb-24">
+        <div class="filter-bar">
+            <div class="search-input-wrapper">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="form-input" placeholder="Chercher par bénéficiaire..." />
+            </div>
+            <a routerLink="/operations/new" class="btn btn-primary ml-auto">
+                <span>+</span> Nouvelle Opération
+            </a>
+        </div>
+    </div>
+
+    <!-- Operations Table -->
+    <div class="card overflow-hidden">
+        @if (loading()) {
+        <div class="loading-overlay">
+            <div class="spinner"></div>
+        </div>
+        } @else if (operations().length === 0) {
+        <div class="empty-state">
+            <div class="empty-state-icon">🏭</div>
+            <div class="empty-state-title">Aucune opération trouvée</div>
+            <p class="empty-state-text">
+                Les mouvements de stock apparaîtront ici une fois créés.
+            </p>
+            <a routerLink="/operations/new" class="btn btn-primary mt-16">Créer une opération</a>
+        </div>
+        } @else {
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Bénéficiaire</th>
+                        <th>Items</th>
+                        <th>Statut</th>
+                        <th style="width: 80px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (op of operations(); track op.id) {
+                    <tr>
+                        <td><code class="ref-tag">#{{ op.id }}</code></td>
+                        <td>{{ op.datePlanifiee }}</td>
+                        <td>
+                            <span class="badge" [class]="getBadgeClass(op.type)">
+                                {{ op.type }}
+                            </span>
+                        </td>
+                        <td>{{ op.beneficiaire || '—' }}</td>
+                        <td>{{ op.items.length }} produit(s)</td>
+                        <td>
+                            <span class="badge" [class]="getStateBadgeClass(op.currentState)">
+                                {{ op.currentState }}
+                            </span>
+                        </td>
+                        <td>
+                            <a [routerLink]="['/operations', op.id]" class="btn-icon-sm" title="Voir détails">👁️</a>
+                            <button class="btn-icon-sm text-danger" title="Supprimer"
+                                (click)="confirmDelete(op)">🗑️</button>
+                        </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        }
+    </div>
+    @if (operationToDelete()) {
+    <app-confirm-dialog [title]="'Supprimer l '"
+        [message]="'Êtes-vous sûr de vouloir supprimer « ' + operationToDelete()!.id + ' » ? Cette action est irréversible.'"
+        (confirmed)="deleteOperarton()" (cancelled)="operationToDelete.set(null)" />
+    }
+</div>
