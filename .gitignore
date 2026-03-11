@@ -26,3 +26,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Build output and log artifacts
+build_output*.txt
+build_err*.txt
+*.log
+build_output.log
