@@ -1,4 +1,4 @@
-import { Component, signal, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { SidebarComponent } from './shared/components/sidebar/sidebar.component';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';

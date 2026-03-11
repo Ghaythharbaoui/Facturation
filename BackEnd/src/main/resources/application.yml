@@ -2,10 +2,10 @@ spring:
   application:
     name: facturestock-backend
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
 server:
-  port: 8082
+  port: ${SERVER_PORT:8080}
   servlet:
     context-path: /
 

@@ -41,3 +41,11 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Build/log artifacts
+build_output*.txt
+build_err*.txt
+build_err.txt
+build_err2.txt
+build_output.log
+doc.json

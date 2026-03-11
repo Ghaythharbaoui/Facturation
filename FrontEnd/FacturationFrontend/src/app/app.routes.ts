@@ -49,10 +49,10 @@ export const routes: Routes = [
                 .then(m => m.OperationDetailComponent)
     },
     {
+        // TODO: Replace with a dedicated DashboardComponent
         path: 'dashboard',
-        loadComponent: () =>
-            import('./features/products/product-list/product-list.component')
-                .then(m => m.ProductListComponent)
+        redirectTo: 'products',
+        pathMatch: 'full'
     },
     {
         path: '**',
