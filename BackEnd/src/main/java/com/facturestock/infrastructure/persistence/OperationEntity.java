@@ -24,9 +24,9 @@ public class OperationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String beneficiaire;
-
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "counter_party_id")
+    private CounterPartyEntity counterParty;
     @Column(nullable = false)
     private OperationType type;
 

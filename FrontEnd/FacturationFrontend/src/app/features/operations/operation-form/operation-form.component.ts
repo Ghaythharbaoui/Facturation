@@ -3,9 +3,11 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { OperationService } from '../../../core/services/operation.service';
 import { ProductService } from '../../../core/services/product.service';
+import { CounterPartyService } from '../../../core/services/counter-party.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { CreateOperationRequest, OperationType, OperationState } from '../../../core/models/operation.model';
 import { Product } from '../../../core/models/product.model';
+import { CounterParty } from '../../../core/models/counter-party.model';
 
 @Component({
     selector: 'app-operation-form',
@@ -17,12 +19,14 @@ import { Product } from '../../../core/models/product.model';
 export class OperationFormComponent implements OnInit {
     private operationService = inject(OperationService);
     private productService = inject(ProductService);
+    private counterPartyService = inject(CounterPartyService);
     private toastService = inject(ToastService);
     private router = inject(Router);
 
     saving = signal(false);
     searchResults = signal<Product[]>([]);
     selectedItems = signal<{ product: Product, quantity: number }[]>([]);
+    counterParties = signal<CounterParty[]>([]);
 
     request: CreateOperationRequest = {
         productIds: {},
@@ -30,12 +34,20 @@ export class OperationFormComponent implements OnInit {
         state: OperationState.BROUILLON,
         datePlanifiee: new Date().toISOString().split('T')[0],
         dateLimit: '',
-        beneficiaire: ''
+        counterPartyId: 0
     };
 
     private searchTimeout: any;
 
     ngOnInit(): void {
+        this.loadCounterParties();
+    }
+
+    loadCounterParties(): void {
+        this.counterPartyService.getCounterParties().subscribe({
+            next: (cp) => this.counterParties.set(cp),
+            error: (err) => console.error('Error loading counterparties', err)
+        });
     }
 
     onSearchProduct(event: any): void {
@@ -84,6 +96,11 @@ export class OperationFormComponent implements OnInit {
     onSubmit(): void {
         if (this.selectedItems().length === 0) {
             this.toastService.warning('Veuillez ajouter au moins un produit');
+            return;
+        }
+
+        if (!this.request.counterPartyId || this.request.counterPartyId === 0) {
+            this.toastService.warning('Veuillez sélectionner un bénéficiaire');
             return;
         }
 

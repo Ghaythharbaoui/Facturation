@@ -16,11 +16,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateOperationRequest {
+    private Long conterPartyId;
     private HashMap<Long, Integer> productIds;
     private OperationType type;
     private OperationState state;
     private LocalDate datePlanifiee;
     private LocalDate dateLimit;
-    private String beneficiaire;
 
 }

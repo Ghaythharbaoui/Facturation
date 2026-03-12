@@ -31,7 +31,7 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="label">Bénéficiaire</span>
-                            <span class="value">{{ operation()!.beneficiaire || '—' }}</span>
+                            <span class="value">{{ operation()!.counterParty?.name || '—' }}</span>
                         </div>
                         <div class="info-item">
                             <span class="label">Date Planifiée</span>

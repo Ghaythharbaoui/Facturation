@@ -18,9 +18,10 @@ public class OperationMapper {
 
         return OperationResponse.builder()
                 .id(domain.getId())
-                .beneficiaire(domain.getBeneficiaire())
+                .counterPartyName(domain.getCounterParty().getName())
                 .type(domain.getType())
                 .currentState(domain.getCurrentState())
+
                 .items(domain.getItems().stream()
                         .map(item -> OperationItemResponse.builder()
                                 .product(productMapper.toResponse(item.getProduct()))

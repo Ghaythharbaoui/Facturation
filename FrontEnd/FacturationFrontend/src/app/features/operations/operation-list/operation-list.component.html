@@ -76,7 +76,7 @@
                                 {{ op.type }}
                             </span>
                         </td>
-                        <td>{{ op.beneficiaire || '—' }}</td>
+                        <td>{{ op.counterParty?.name || '—' }}</td>
                         <td>{{ op.items.length }} produit(s)</td>
                         <td>
                             <span class="badge" [class]="getStateBadgeClass(op.currentState)">

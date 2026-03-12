@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class OperationEntityMapper {
 
     private final ProductEntityMapper productMapper;
+    private final CounterPartyEntityMapper counterPartyMapper;
 
     public Operation toDomain(OperationEntity entity) {
         if (entity == null)
@@ -17,7 +18,7 @@ public class OperationEntityMapper {
 
         return Operation.builder()
                 .id(entity.getId())
-                .beneficiaire(entity.getBeneficiaire())
+                .counterParty(counterPartyMapper.toDomain(entity.getCounterParty()))
                 .type(entity.getType())
                 .currentState(entity.getCurrentState())
                 .items(entity.getItems().stream()
@@ -37,7 +38,7 @@ public class OperationEntityMapper {
 
         OperationEntity entity = OperationEntity.builder()
                 .id(domain.getId())
-                .beneficiaire(domain.getBeneficiaire())
+                .counterParty(counterPartyMapper.toEntity(domain.getCounterParty()))
                 .type(domain.getType())
                 .currentState(domain.getCurrentState())
                 .datePlanifiee(domain.getDatePlanifiee())

@@ -7,8 +7,10 @@ import com.facturestock.domain.model.operation.Operation;
 import com.facturestock.domain.model.operation.OperationItem;
 import com.facturestock.domain.model.operation.OperationState;
 import com.facturestock.domain.model.operation.OperationType;
+import com.facturestock.domain.port.CounterPartyRepositoryPort;
 import com.facturestock.domain.port.OperationRepository;
 import com.facturestock.domain.port.ProductRepositoryPort;
+import com.facturestock.domain.model.counterparty.CounterParty;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -21,9 +23,15 @@ public class OperationService implements OperationUseCase {
 
         private final OperationRepository operationRepository;
         private final ProductRepositoryPort productRepository;
+        private final CounterPartyRepositoryPort counterPartyRepository;
 
         @Override
+        @Transactional
         public Operation addOperation(CreateOperationRequest request) {
+                CounterParty counterParty = counterPartyRepository.findById(request.getConterPartyId())
+                                .orElseThrow(() -> new RuntimeException(
+                                                "CounterParty not found with ID: " + request.getConterPartyId()));
+
                 List<OperationItem> items = request.getProductIds().entrySet().stream()
                                 .map(entry -> {
                                         Product product = productRepository.findById(entry.getKey())
@@ -36,8 +44,13 @@ public class OperationService implements OperationUseCase {
                                                         .build();
                                 })
                                 .toList();
+                if (request.getConterPartyId() != null) {
+                        counterParty = counterPartyRepository.findById(request.getConterPartyId())
+                                        .orElseThrow(() -> new RuntimeException("CounterParty not found with ID: "
+                                                        + request.getConterPartyId()));
+                }
                 Operation operation = Operation.builder()
-                                .beneficiaire(request.getBeneficiaire())
+                                .counterParty(counterParty)
                                 .type(request.getType())
                                 .items(items)
                                 .datePlanifiee(request.getDatePlanifiee())
