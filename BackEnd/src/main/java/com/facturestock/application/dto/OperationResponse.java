@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 public class OperationResponse {
     private Long id;
-    private String beneficiaire;
+    private String counterPartyName;
     private OperationType type;
     private OperationState currentState;
     private List<OperationItemResponse> items;

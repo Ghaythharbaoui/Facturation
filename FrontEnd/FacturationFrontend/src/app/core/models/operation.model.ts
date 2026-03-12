@@ -1,4 +1,5 @@
 import { Product } from './product.model';
+import { CounterParty } from './counter-party.model';
 
 export enum OperationType {
     LIVRAISON = 'LIVRAISON',
@@ -21,7 +22,7 @@ export interface OperationItem {
 
 export interface Operation {
     id: number;
-    beneficiaire: string;
+    counterParty: CounterParty;
     type: OperationType;
     currentState: OperationState;
     items: OperationItem[];
@@ -35,5 +36,5 @@ export interface CreateOperationRequest {
     state: OperationState;
     datePlanifiee: string;
     dateLimit: string;
-    beneficiaire: string;
+    counterPartyId: number;
 }

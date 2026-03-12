@@ -33,9 +33,13 @@
                         </div>
 
                         <div class="form-group">
-                            <label class="form-label">Bénéficiaire / Partenaire</label>
-                            <input type="text" class="form-input" placeholder="Ex: Client XYZ, Fournisseur ABC..."
-                                [(ngModel)]="request.beneficiaire" name="beneficiaire" />
+                            <label class="form-label">Bénéficiaire / Partenaire *</label>
+                            <select class="form-select" [(ngModel)]="request.counterPartyId" name="counterPartyId" required>
+                                <option [value]="0" disabled>Sélectionner un partenaire</option>
+                                @for (cp of counterParties(); track cp.id) {
+                                    <option [value]="cp.id">{{ cp.name }} ({{ cp.role }})</option>
+                                }
+                            </select>
                         </div>
 
                         <div class="form-row">
